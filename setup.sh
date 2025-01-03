@@ -197,7 +197,7 @@ function getSTT() {
             rm -fr ${ROOT}/.vosk
             mkdir ${ROOT}/.vosk
             cd ${ROOT}/.vosk
-            VOSK_VER="0.3.45"
+            VOSK_VER="0.3.50"
             if [[ ${TARGET} == "darwin" ]]; then
                 VOSK_VER="0.3.42"
                 VOSK_DIR="vosk-osx-${VOSK_VER}"
