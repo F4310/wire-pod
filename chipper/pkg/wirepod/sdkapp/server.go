@@ -3,6 +3,7 @@ package sdkapp
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"image"
@@ -140,6 +141,45 @@ func SdkapiHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(json))
 			return
 		}
+	
+	case r.URL.Path == "/api-sdk/image_detection":
+		var client vectorpb.ExternalInterface_CameraFeedClient
+		client, err = robotObj.Vector.Conn.CameraFeed(
+		robotObj.Ctx,
+		&vectorpb.CameraFeedRequest{})
+		camStreamEnabled := true
+		defer client.CloseSend()
+
+		i := image.NewRGBA(image.Rectangle{
+			Min: image.Point{X: 0, Y: 0},
+			Max: image.Point{X: 640, Y: 360},
+		})
+		if camStreamEnabled{
+			response, err := client.Recv()
+			if err != nil {
+				fmt.Fprint(w, "error: "+err.Error())
+				return
+			}
+			imageBytes := response.GetData()
+			img, _, _ := image.Decode(bytes.NewReader(imageBytes))
+			
+		}
+		var imageGen = i.SubImage(image.Rectangle{
+			Min: image.Point{X: 0, Y: 0},
+			Max: image.Point{X: 640, Y: 360},
+		})
+
+		var buf bytes.Buffer
+		if err := jpeg.Encode(&buf, imageGen, nil); err != nil {
+			fmt.Fprint(w, "error: "+err.Error())
+			return
+		}
+		base64Str := base64.StdEncoding.EncodeToString(buf.Bytes())
+		fmt.Fprint(w, base64Str)
+		camStreamEnabled = false
+		client.CloseSend()
+
+		return
 
 	case r.URL.Path == "/api-sdk/play_sound":
 		file, _, err := r.FormFile("sound")
