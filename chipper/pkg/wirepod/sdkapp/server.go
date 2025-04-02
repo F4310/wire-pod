@@ -170,9 +170,16 @@ func SdkapiHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprint(w, "error: "+err.Error())
 				return
 			}
-			
-			// Substitui a imagem original pela imagem decodificada
-			i = img.(*image.RGBA)
+	
+			// Converte a imagem para o formato RGBA, se necessário
+			if rgbaImg, ok := img.(*image.RGBA); ok {
+				i = rgbaImg // Se a imagem já for do tipo RGBA, apenas atribua
+			} else if ycbcrImg, ok := img.(*image.YCbCr); ok {
+				i = convertToRGBA(ycbcrImg) // Se for YCbCr, converta
+			} else {
+				fmt.Fprint(w, "error: unsupported image format")
+				return
+			}
 		}
 	
 		var imageGen = i.SubImage(image.Rectangle{
@@ -189,6 +196,7 @@ func SdkapiHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, base64Str)
 	
 		return
+	
 
 	case r.URL.Path == "/api-sdk/play_sound":
 		file, _, err := r.FormFile("sound")
@@ -570,6 +578,17 @@ func SdkapiHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "done")
 		return
 	}
+}
+
+func convertToRGBA(ycbcr *image.YCbCr) *image.RGBA {
+    rgba := image.NewRGBA(ycbcr.Bounds())
+    for y := ycbcr.Rect.Min.Y; y < ycbcr.Rect.Max.Y; y++ {
+        for x := ycbcr.Rect.Min.X; x < ycbcr.Rect.Max.X; x++ {
+            c := ycbcr.YCbCrAt(x, y)
+            rgba.Set(x, y, c)
+        }
+    }
+    return rgba
 }
 
 func camStreamHandler(w http.ResponseWriter, r *http.Request) {
