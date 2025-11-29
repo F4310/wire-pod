@@ -11,12 +11,12 @@ require (
 	github.com/digital-dream-labs/opus-go v0.0.0-20201230195736-934a8a9e0a1e
 	github.com/digital-dream-labs/vector-bluetooth v0.0.0-20210604051118-1c511122d877
 	github.com/fforchino/vector-go-sdk v0.0.0-20231108155304-62168f3595d6
-	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20240917125632-5b1ce40fa882
 	github.com/go-audio/audio v1.0.0
 	github.com/go-audio/wav v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.5.0
 	github.com/kercre123/vosk-api/go v1.0.2
+	github.com/kercre123/whisper.cpp/bindings/go v0.0.0-20250602164512-60cd96acff3a
 	github.com/kercre123/zeroconf v1.0.1
 	github.com/maxhawkins/go-webrtcvad v0.0.0-20210121163624-be60036f3083
 	github.com/ncruces/zenity v0.10.10
